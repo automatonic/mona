@@ -20,35 +20,34 @@ namespace Mona
 		<#for (int max = 2; max <= 7; max++) { #>/// <summary>
         /// Creates a parser that expects a concatenation of <#=max#> parsers
         /// </summary>
-        /// <typeparam name="TInput">The type of the input symbol</typeparam>
-		/// <typeparam name="TConcatNode">The resulting tree node type</typeparam>
+        /// <typeparam name="TConcatNode">The resulting tree node type</typeparam>
 		<#for (int i = 1; i <= max; i++) { #>
 /// <typeparam name="TNode<#=i#>">The type of the tree node for parser<#=i#></typeparam>
 		<#}#>/// <param name="parseSelector">A function that builds the resulting parse object</param>
 		<#for (int i = 1; i <= max; i++) { #>
 /// <param name="parser<#=i#>">parser<#=i#></param>
 		<#}#>/// <returns>A parser that represents the concatenation</returns>
-        public static IParser<TInput, TConcatNode>
+        public static IParser<TConcatNode>
             Concatenation<
-				TInput, 
+				char, 
 				TConcatNode,
 				<#for (int i = 1; i <= max; i++) { #>
 TNode<#=i#><#=i == max ? "" : ","#>
 				<#}#>>(
             <#for (int i = 1; i <= max; i++) { #>
-IParser<TInput, TNode<#=i#>> parser<#=i#>,
+IParser<TNode<#=i#>> parser<#=i#>,
 			<#}#>
 Func<
-				IEnumerable<TInput>,
+				IEnumerable<char>,
 				Exception,
 				<#for (int i = 1; i <= max; i++) { #>
-IParse<TInput, TNode<#=i#>>,
+IParse<TNode<#=i#>>,
 				<#}#>
-IParse<TInput, TConcatNode>
+IParse<TConcatNode>
 			> parseSelector
 			)
         {
-            return Parser.Create<TInput, TConcatNode>(
+            return Parser.Create< TConcatNode>(
                 parse: input =>
                 {
                     var parse1 = parser1
@@ -92,7 +91,7 @@ parse<#=i#><#=i == max ? "" : ","#>
 		/// <summary>
 		/// Creates a parser that expects a concatenation of <#=max#> parsers
         /// </summary>
-        /// <typeparam name="TInput">The type of the input symbol</typeparam>
+        /// <typeparam name="char">The type of the input symbol</typeparam>
 		/// <typeparam name="TConcatNode">The resulting tree node type</typeparam>
 		<#for (int i = 1; i <= max; i++) { #>
 /// <typeparam name="TNode<#=i#>">The type of the tree node for parser<#=i#></typeparam>
@@ -100,15 +99,15 @@ parse<#=i#><#=i == max ? "" : ","#>
 		<#for (int i = 1; i <= max; i++) { #>
 /// <param name="parser<#=i#>">parser<#=i#></param>
 		<#}#>/// <returns>A parser that represents the concatenation</returns>
-        public static IParser<TInput, TConcatNode>
+        public static IParser<TConcatNode>
             Concatenation<
-				TInput, 
+				char, 
 				TConcatNode,
 				<#for (int i = 1; i <= max; i++) { #>
 TNode<#=i#><#=i == max ? "" : ","#>
 				<#}#>>(
             <#for (int i = 1; i <= max; i++) { #>
-IParser<TInput, TNode<#=i#>> parser<#=i#>,
+IParser<TNode<#=i#>> parser<#=i#>,
 			<#}#>
 Func<
 				<#for (int i = 1; i <= max; i++) { #>
@@ -128,7 +127,7 @@ parseSelector: (
 				<#for (int i = 1; i <= max; i++) { #>
 parse<#=i#><#=i == max ? "" : ","#>
 			<#}#>
-) => new Parse<TInput, TConcatNode>(
+) => new Parse< TConcatNode>(
 				remainder: remainder,
 				error: error,
 				node: nodeSelector(

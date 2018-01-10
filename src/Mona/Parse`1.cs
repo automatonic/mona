@@ -9,30 +9,29 @@ namespace Mona
     /// Represents the result of a parser's work
     /// </summary>
     /// <typeparam name="TNode">The type of the resulting tree node</typeparam>
-    public interface IParse<TNode>
+    internal class Parse<TNode> : IParse<TNode>
     {
-        /// <summary>
-        /// The root/local node of the resulting tree
-        /// </summary>
-        TNode Node
+        public Parse(
+            TNode node,
+            ReadOnlyMemory<char> remainder,
+            Exception error
+            )
         {
-            get;
+            Node = node;
+            Remainder = remainder;
+            Error = error;
         }
+
+        public TNode Node { get; }
 
         /// <summary>
         /// The remaining Input, if any
         /// </summary>
-        ReadOnlyMemory<char> Remainder
-        {
-            get;
-        }
+        public ReadOnlyMemory<char> Remainder { get; }
 
         /// <summary>
         /// The exception, if one occurred. Null otherwise
         /// </summary>
-        Exception Error
-        {
-            get;
-        }
+        public Exception Error { get; }
     }
 }
