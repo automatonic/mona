@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,12 +9,36 @@ using InputBuffer = System.Buffers.ReadOnlyBuffer<byte>;
 
 namespace Mona
 {
-    public static class InputFeed
-    {
-        public static IObservable<InputBuffer> For(Uri uri) =>
-            For(uri, LoggerFactory.Default)
+    /// <summary>
+    /// A delegate that observes zero or more input buffers within a logging context
+    /// </summary>
+    /// <param name="logger">The logging context. Implementations should ignore a null logger.</param>
+    /// <returns></returns>
+    public delegate IObservable<InputBuffer> ScannerDelegate(InputBuffer input, ILogger logger);
 
-        public static IObservable<InputBuffer> Observe(Uri uri, ILoggerFactory loggerFactory)
+    /// <summary>
+    /// A delegate that observes zero or more input buffers within a logging context
+    /// </summary>
+    /// <param name="logger">The logging context. Implementations should ignore a null logger.</param>
+    /// <returns></returns>
+    public delegate IObservable<InputBuffer> ScannerDelegate<TInput, TSymbol, TValue>(InputBuffer input, ILogger logger);
+
+
+    /// <summary>
+    /// A delegate that observes zero or more input buffers within a logging context
+    /// </summary>
+    /// <param name="logger">The logging context. Implementations should ignore a null logger.</param>
+    /// <returns></returns>
+    public delegate IObservable<InputBuffer> EvaluatorDelegate(InputBuffer input, ILogger logger);
+    
+    /// <summary>
+    /// A helper class that rolls up standard input cases
+    /// </summary>
+    public static class Lexer
+    {
+        public static ReadOnlyMemory<char> Empty() => "".AsReadOnlyMemory();
+        
+        public static ReadOnlyMemory<char> For(Uri uri)
         {
             if (uri == null)
             {
